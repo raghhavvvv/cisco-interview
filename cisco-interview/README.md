@@ -1,16 +1,31 @@
-# React + Vite
+# Cisco Interview Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a frontend application built with React and Vite. It demonstrates data fetching from an external API, component state management, and side-effects in React.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Post Fetching**: Automatically fetches a list of posts from the [JSONPlaceholder API](https://jsonplaceholder.typicode.com/) on component mount.
+- **Pagination**: Navigate through the posts using `Previous` and `Next` buttons.
+- **Auto-Scroll**: Includes an automated scrolling feature that advances to the next post every 3 seconds. Once it reaches the end, it seamlessly loops back to the first post.
 
-## React Compiler
+## Running Locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To get the application running on your local machine, follow these steps:
 
-## Expanding the ESLint configuration
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Open the provided `localhost` link in your browser to view the app.
+
+## Technologies Used
+
+- React (with Hooks)
+- Vite
+- JavaScript
