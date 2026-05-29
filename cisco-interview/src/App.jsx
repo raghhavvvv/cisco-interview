@@ -4,8 +4,51 @@ const PostViewer = () => {
   const [posts, setPosts] = useState([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fetchingMore, setFetchingMore] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalPosts, setTotalPosts] = useState(0);
 
+  // Fetch posts when page changes
+  useEffect(() => {
+    const loadPosts = async () => {
+      if (page === 1) setLoading(true);
+      else setFetchingMore(true);
+
+      try {
+        const res = await fetch(`https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=10`);
+        const totalCount = res.headers.get('x-total-count');
+        if (totalCount) {
+          setTotalPosts(parseInt(totalCount, 10));
+        }
+        const data = await res.json();
+
+        if (data.length === 0) {
+          setHasMore(false);
+        } else {
+          setPosts((prev) => [...prev, ...data]);
+          if (data.length < 10) setHasMore(false); // No more posts if we got less than requested
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+        setFetchingMore(false);
+      }
+    };
+
+    loadPosts();
+  }, [page]);
+
+  // Pre-fetch the next page when getting close to the end
+  useEffect(() => {
+    if (posts.length > 0 && index >= posts.length - 3 && hasMore && !fetchingMore) {
+      setPage((prev) => prev + 1);
+    }
+  }, [index, posts.length, hasMore, fetchingMore]);
+
+  // Handle autoplay
   useEffect(() => {
     let interval;
     if (isAutoPlaying && posts.length > 0) {
@@ -14,23 +57,16 @@ const PostViewer = () => {
           if (prevIndex < posts.length - 1) {
             return prevIndex + 1;
           } else {
+            // Stay on the last post if we are still fetching more
+            if (hasMore) return prevIndex;
+            // Otherwise, loop back to the start
             return 0;
           }
         });
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [isAutoPlaying, posts.length]);
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts?_page=1&_limit=10')
-      .then((res) => res.json())
-      .then((data) => {
-        setPosts(data);
-        setLoading(false);
-      })
-      .catch((err) => console.error("Error fetching data:", err));
-  }, []);
+  }, [isAutoPlaying, posts.length, hasMore]);
 
   if (loading) return <p>Loading posts...</p>;
   if (posts.length === 0) return <p>No posts found.</p>;
@@ -54,11 +90,11 @@ const PostViewer = () => {
         </button>
 
         <span style={{ margin: '0 15px' }}>
-          {index + 1} of {posts.length}
+          {index + 1} of {totalPosts > 0 ? totalPosts : (posts.length + (hasMore ? '+' : ''))}
         </span>
 
         <button
-          disabled={index === posts.length - 1}
+          disabled={index >= posts.length - 1}
           onClick={() => setIndex(index + 1)}
         >
           Next
@@ -70,6 +106,12 @@ const PostViewer = () => {
           {isAutoPlaying ? 'Pause Auto Scroll' : 'Start Auto Scroll'}
         </button>
       </div>
+      
+      {fetchingMore && (
+        <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+          Loading more posts...
+        </p>
+      )}
     </div>
   );
 };
