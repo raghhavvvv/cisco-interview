@@ -4,9 +4,10 @@ This is a frontend application built with React and Vite. It demonstrates data f
 
 ## Features
 
-- **Post Fetching**: Automatically fetches a list of posts from the [JSONPlaceholder API](https://jsonplaceholder.typicode.com/) on component mount.
-- **Pagination**: Navigate through the posts using `Previous` and `Next` buttons.
-- **Auto-Scroll**: Includes an automated scrolling feature that advances to the next post every 3 seconds. Once it reaches the end, it seamlessly loops back to the first post.
+- **Dynamic Chunk Fetching**: Automatically fetches posts in small chunks (10 at a time) from the [JSONPlaceholder API](https://jsonplaceholder.typicode.com/). This prevents network bottlenecks and reduces memory overhead for massive datasets.
+- **Pre-fetching Pagination**: Navigate through the posts using `Previous` and `Next` buttons. When approaching the end of the currently loaded posts, the app seamlessly pre-fetches the next chunk in the background to ensure a smooth user experience.
+- **Accurate Total Counts**: Leverages the API's `x-total-count` HTTP response header to precisely display the total number of available records before they are even downloaded.
+- **Auto-Scroll**: Includes an automated scrolling feature that advances to the next post every 3 seconds. It safely pauses if a background fetch is ongoing, and once all records are completely exhausted, it seamlessly loops back to the first post.
 
 ## Running Locally
 
